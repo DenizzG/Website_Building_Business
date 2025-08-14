@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "websitebusinessscraper",
+  "private_key_id": "d3ea795972d21326b81dd0e0a26119379134b5c5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC4qZA7hxYZdD+0\nEa4P+w9PoPgqR1hUGBl+wOGCzSIv354o0diQk57XL6BoljLYOx8zPs3VTU7PtF++\nn5XKaVztfi9It/hh1faSPLUVE2ujZIWCWjZoM2TxLSBKgr0H4Jug6xQEpeBAhbR2\n8Q6Y/Z9VNrHCvdTTV47Qpak2sXZqclZ8+kAQYe/hRDqoNQYE2lepTmPn73mva34X\n65yVyLA2hlIYHexr1KRDCBTe1SEvXNG005+pqfOrhMNcAU+ZQY7VDlqyHo/Rb+9B\noSjmEepkv3HTdQ3fLtkQphh2+muxskUwKa/x4vj09zUvPARFQ/wQyDXcRNkFustH\nlAZRw7FdAgMBAAECggEAAhtPyENn7s29taSHU4ADZ7QoFfYPEukyI+5iuZGfieOc\n3qMDkSVYqDnPNFeU/ZSHFu2Tfuh34AoTFuNOhoBMjW+6wwieQ8zOGFMATzI+hcmt\ndZQ+j1Jux2BCwGGHczc5GfffQuz63Ew/h8/Y4R6bmmbvq49rhdG3kQ0ixhCg5OFO\nFRnw3yOufXWz0R38e0d32lkfazMqRpeCcwt6MqNDU6bfVNjZ8c4ioyGgfGUOEpCt\nWGMTRGoWJmIyoQmAt90IXt6A+bz/knyx3A0+j8duNhXUPVeNOcRBfCUeyMToZ22n\nvtwwKLiy6VoYRJRJK+XyRVkczIvBc6u2cB55maKZQQKBgQDmic1InvK1RkUmpbpX\nXzISyWBJ3FCUD3cqS9wTd38Na8KJxkYiHmioumEpBnoxqSk/ZMK47OHMJT0cetik\nLDAjEBMLtIq67SbD7bfaBvN/glO0zck1/MToRKqZOx5Gew/CrigBOb/6nBnSyFCR\n3efngHcTaKB4Kp9Y6FLmFucc8QKBgQDNDqx2VNNzR/S2I9+ZU9dcVbk5UkwaGFLt\n6jeDX0y6ygMEkFM9PNhfFJpE+bmeu+37Lcva7Z+sGZ7YVS/UY3O5L2WBWrgFAPS0\n1J4c35P6SXgRTsmqdvbO/YmApCsuHWQiO0RUW2UzvnDcLeRXhP5u+GOS4BtOOGlc\nvpXLZDlLLQKBgCU6RXsfp8PcGBiYlJG9XqGoATOMLzrpkG21GFHQbyTkrOKAsRyb\nWn08s6njUOIqFe4VwFgKcJ/9t3Oc5tUECbXvx5ORUQHEgAkNny3HB5Ukn43H2WEt\nc0Kqq/3YjRgGkVH3u6APClBW2tit3kzfz64TkacBs0AUaez6f0CGnEWRAoGAeHyi\nwXTeOeKR22QAwisNY+fKye+dX8fjEoCI1dxtTWPdmhTjlBvoVxXX/6dsdeSe1PP3\n0E/HfmwfdaW4UOeO28UJs5QGhIonPwmfTf/hBzOcJS9SN6NnKgC3hqrv5EzIxYRl\nhdud/2VrEzSz8ujmR3YTq/2ajb9/yUsC4VumfpECgYBdCN4Z70AzKH7rVGykSJwZ\nBcMcbeLLxOyxVvMlwV2D2Qa7kfZqta0KTuQD2YX/7VopA+c7MlxZ+EbHYiQOdvF7\nnny1MdYHJ2XlfLxh1+C1bJ4N3WG5TJj+t0i7EuLfx9GfhzkPtxmn8i95JCHBbJ0S\nKOQzjsEzNqj2ZTc+ssKvbA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "google-custom-search-api@websitebusinessscraper.iam.gserviceaccount.com",
+  "client_id": "110973336616604179041",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-custom-search-api%40websitebusinessscraper.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
