@@ -164,10 +164,7 @@ def is_excluded_domain(url: str) -> bool:
     if any(excluded in domain for excluded in EXCLUDED_DOMAINS):
         return True
     
-    # Exclude non-US domains for US city searches
-    non_us_tlds = {'.com.au', '.co.uk', '.in', '.ca', '.de', '.fr', '.it', '.es', '.nl'}
-    if any(domain.endswith(tld) for tld in non_us_tlds):
-        return True
+    # Allow UK and international TLDs (no exclusion by TLD for London searches)
     
     # Exclude obviously non-automotive domains
     non_automotive_keywords = {
@@ -180,28 +177,39 @@ def is_excluded_domain(url: str) -> bool:
     return False
 
 
-def is_automotive_business(page_text: str) -> bool:
-    """Check if page content suggests it's an automotive business"""
+def is_pilates_business(page_text: str) -> bool:
+    """Legacy check (kept for backward compatibility). Always False for nail salon run."""
+    return False
+
+
+def is_beauty_salon_business(page_text: str) -> bool:
+    """Check if page content suggests it's a beauty salon business"""
     text_lower = page_text.lower()
-    
-    # Automotive keywords (must have some)
-    automotive_keywords = {
-        'car', 'auto', 'vehicle', 'engine', 'brake', 'transmission', 'oil change',
-        'tire', 'battery', 'diagnostic', 'smog', 'emissions', 'muffler', 'exhaust'
+
+    positive_keywords = {
+        'beauty salon', 'beauty', 'salon', 'spa', 'hair salon', 'hairdresser', 'stylist',
+        'hair cut', 'haircut', 'hair style', 'hair color', 'highlights', 'lowlights',
+        'blowdry', 'blow dry', 'manicure', 'pedicure', 'nail', 'nails', 'facial',
+        'massage', 'waxing', 'eyebrow', 'eyelash', 'makeup', 'cosmetics', 'beauty treatment',
+        'appointment', 'booking', 'book now', 'walk-ins', 'price list', 'services menu',
+        'treatment menu', 'beautician', 'cosmetologist', 'esthetician'
     }
-    
-    # Non-automotive keywords (red flags)
-    non_automotive_keywords = {
-        'kitchen', 'bathroom', 'cabinet', 'countertop', 'tile', 'backsplash',
-        'remodel', 'renovation', 'interior design', 'flooring', 'plumbing',
-        'electrical', 'hvac', 'roofing', 'landscaping', 'construction'
+
+    negative_keywords = {
+        'automotive', 'auto', 'car', 'mechanic', 'garage', 'restaurant', 'plumb', 'electric',
+        'roof', 'accounting', 'law', 'solicitor', 'estate agent', 'builder', 'hvac', 'landscap',
+        'medical', 'doctor', 'dentist', 'hospital', 'clinic', 'pharmacy'
     }
-    
-    auto_score = sum(1 for keyword in automotive_keywords if keyword in text_lower)
-    non_auto_score = sum(1 for keyword in non_automotive_keywords if keyword in text_lower)
-    
-    # Must have automotive keywords and fewer non-automotive keywords
-    return auto_score >= 2 and auto_score > non_auto_score
+
+    pos_score = sum(1 for keyword in positive_keywords if keyword in text_lower)
+    neg_score = sum(1 for keyword in negative_keywords if keyword in text_lower)
+
+    return pos_score >= 2 and pos_score > neg_score
+
+
+def is_nail_salon_business(page_text: str) -> bool:
+    """Legacy function - now redirects to beauty salon check"""
+    return is_beauty_salon_business(page_text)
 
 
 def page_disallows_marketing(page_text: str) -> bool:

@@ -7,7 +7,7 @@ from .search_providers import BaseSearchProvider, collect_results_for_pages
 from .util import (
     is_suppressed,
     is_excluded_domain,
-    is_automotive_business,
+    is_beauty_salon_business,
     load_suppression_list,
     normalize_domain,
     page_disallows_marketing,
@@ -18,7 +18,8 @@ Row = Dict[str, Optional[str]]
 
 
 def build_query(service: str, city: str, site_filter: Optional[str] = None) -> str:
-    parts = [f'"{service.strip()}"', f'"{city.strip()}"']
+    phrase = f'{service.strip()} {city.strip()}'
+    parts = [phrase]
     if site_filter:
         parts.append(site_filter.strip())
     return " ".join(parts)
@@ -52,17 +53,17 @@ def process_result(result: Dict[str, str], service: str, city: str, suppression:
     business_names: Set[str] = set()
     page_urls: List[str] = []
 
-    # Check if this is actually an automotive business
-    automotive_business = False
+    # Check if this is actually a beauty salon business
+    beauty_business = False
     
     for page_url, soup in crawl_site(link, max_pages=5):
         page_text = soup.get_text(" ", strip=True)
         if page_disallows_marketing(page_text):
             continue
         
-        # Check if this page suggests automotive business
-        if is_automotive_business(page_text):
-            automotive_business = True
+        # Check if this page suggests beauty salon business
+        if is_beauty_salon_business(page_text):
+            beauty_business = True
 
         # Collect emails from this page
         page_emails = [e for e in extract_emails(soup, page_text) if not is_suppressed(e, suppression)]
@@ -80,9 +81,9 @@ def process_result(result: Dict[str, str], service: str, city: str, suppression:
         
         page_urls.append(page_url)
 
-    # Skip if not an automotive business
-    if not automotive_business:
-        print(f"    Skipping non-automotive business: {domain}")
+    # Skip if not a beauty salon business
+    if not beauty_business:
+        print(f"    Skipping non-beauty-salon business: {domain}")
         return []
 
     # If no useful data found, skip this domain
@@ -121,6 +122,8 @@ def run_pipeline(
 ) -> None:
     suppression = load_suppression_list()
 
+    seen_emails_global: Set[str] = set()
+
     with open(output_csv, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
@@ -153,6 +156,14 @@ def run_pipeline(
                     print(f"  [{i}/{len(results)}] Processing: {r.get('link', 'Unknown URL')}")
                     rows = process_result(r, service, city, suppression)
                     for row in rows:
+                        # Global email dedupe across all rows
+                        emails_in_row = [e.strip().lower() for e in (row.get("email") or "").split(";") if e.strip()]
+                        unique_emails = [e for e in emails_in_row if e not in seen_emails_global]
+                        if not unique_emails:
+                            continue
+                        for e in unique_emails:
+                            seen_emails_global.add(e)
+                        row["email"] = "; ".join(unique_emails)
                         writer.writerow(row)
                         rows_written += 1
                 

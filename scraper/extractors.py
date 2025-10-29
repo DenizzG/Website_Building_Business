@@ -6,16 +6,11 @@ from typing import Dict, List, Optional, Set, Tuple
 import google.generativeai as genai
 from bs4 import BeautifulSoup
 
-# More comprehensive email patterns
+# More conservative email patterns (reduce false positives)
 EMAIL_PATTERNS = [
-    # Standard email pattern
     re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I),
-    # Email with spaces around @ (sometimes obfuscated)
     re.compile(r"\b[A-Z0-9._%+-]+\s*@\s*[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I),
-    # Email with [at] or (at) instead of @
     re.compile(r"\b[A-Z0-9._%+-]+\s*(?:\[at\]|\(at\)|@)\s*[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I),
-    # Email split across lines or with extra spaces
-    re.compile(r"\b[A-Z0-9._%+-]+\s*[@]\s*[A-Z0-9.-]+\s*\.\s*[A-Z]{2,}\b", re.I),
 ]
 
 # Very loose phone matcher for US/UK styles
@@ -53,13 +48,7 @@ def extract_emails(soup: BeautifulSoup, text: Optional[str] = None) -> Set[str]:
             if clean_email:
                 emails.add(clean_email.lower())
     
-    # 4. Look in HTML attributes and comments
-    html_content = str(soup)
-    for pattern in EMAIL_PATTERNS:
-        for match in pattern.findall(html_content):
-            clean_email = clean_email_match(match)
-            if clean_email:
-                emails.add(clean_email.lower())
+    # 4. Avoid scanning raw HTML (often leads to asset filename false positives)
     
     # 5. LLM fallback if no emails found and API key available
     if not emails:
@@ -95,6 +84,10 @@ def clean_email_match(email_text: str) -> Optional[str]:
     # Filter out common false positives
     false_positives = {'example@example.com', 'test@test.com', 'email@domain.com'}
     if email.lower() in false_positives:
+        return None
+    # Reject obvious assets or file names (e.g., *@2x.jpg)
+    asset_exts = ('.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.ico', '.css', '.js', '.pdf')
+    if any(email.lower().endswith(ext) for ext in asset_exts):
         return None
     
     return email
@@ -216,6 +209,22 @@ def _first(value):
     return value
 
 
+def _extract_string_value(value):
+    """Extract string value from various JSON-LD formats."""
+    if isinstance(value, str):
+        return value
+    elif isinstance(value, dict):
+        # Try common properties that might contain the actual string value
+        for key in ["name", "@value", "value", "text"]:
+            if key in value and isinstance(value[key], str):
+                return value[key]
+        return None
+    elif isinstance(value, list) and value:
+        # If it's a list, try to extract from the first item
+        return _extract_string_value(value[0])
+    return None
+
+
 def extract_business_info_from_jsonld(soup: BeautifulSoup) -> Tuple[Optional[str], Optional[str]]:
     name: Optional[str] = None
     address_str: Optional[str] = None
@@ -243,11 +252,11 @@ def extract_business_info_from_jsonld(soup: BeautifulSoup) -> Tuple[Optional[str
                 addr = obj.get("address")
                 if isinstance(addr, dict):
                     parts = [
-                        addr.get("streetAddress"),
-                        addr.get("addressLocality"),
-                        addr.get("addressRegion"),
-                        addr.get("postalCode"),
-                        addr.get("addressCountry"),
+                        _extract_string_value(addr.get("streetAddress")),
+                        _extract_string_value(addr.get("addressLocality")),
+                        _extract_string_value(addr.get("addressRegion")),
+                        _extract_string_value(addr.get("postalCode")),
+                        _extract_string_value(addr.get("addressCountry")),
                     ]
                     address_str = ", ".join([p for p in parts if p])
                 elif isinstance(addr, str):
